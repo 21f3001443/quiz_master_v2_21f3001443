@@ -1,5 +1,5 @@
-# Quiz Master - V1
-It is a multi-user app (one requires an administrator and other users) that acts as an exam preparation site for multiple courses.
+# Quiz Master API
+It is an API that acts as an integration point for frontend and backend database.
 
 ## 🖥️ How to Run the Application
 
