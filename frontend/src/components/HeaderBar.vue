@@ -45,11 +45,23 @@ export default {
                     return;
                 }
 
+                const response = await fetch('http://127.0.0.1:5000/api/users/login/ping', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${access_token}`
+                    }
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    return
+                }
+            
                 const decoded = jwtDecode(access_token);
                 this.user = decoded.sub;
                 this.role = decoded.role;
                 this.isExpired = Date.now() / 1000 >= decoded.exp;
-                
+
             } catch (error) {
                 console.error("Failed to fetch user status:", error);
             }

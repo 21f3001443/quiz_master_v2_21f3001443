@@ -7,17 +7,17 @@
                         <h2><span class="badge text-bg-warning">New User</span></h2>
                     </blockquote>
                 </figure>
-                <form @submit.prevent="register" class="row g-3 needs-validation">
+                <form class="row g-3 needs-validation" @submit.prevent="createUser">
                     <div class="col-md-6">
-                        <label for="user_id" class="form-label">User ID : </label>
-                        <input type="text" v-model="user_id" class="form-control" id="user_id" name="user_id" title="Please provide a User ID!" required>
+                        <label for="login_id" class="form-label">Login ID : </label>
+                        <input type="text" v-model="login_id" class="form-control" id="login_id" name="login_id" title="Please provide a Login ID!" required>
                         <div class="invalid-feedback">
-                            Please provide a User ID!
+                            Please provide a Login ID!
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="password" class="form-label">Password : </label>
-                        <input type="password" v-model="password" class="form-control" id="password" name="password" title="Password must be at least 8 characters long!" pattern="^.{8,}$" required>
+                        <label for="login_password" class="form-label">Password : </label>
+                        <input type="password" v-model="login_password" class="form-control" id="login_password" name="login_password" title="Password must be at least 8 characters long!" pattern="^.{8,}$" required>
                         <div class="invalid-feedback">
                             Password must be at least 8 characters long!
                         </div>
@@ -45,8 +45,7 @@
                     </div>
                     <div class="col-md-6">
                         <label for="user_dob" class="form-label">DOB : YYYY-MM-DD</label>
-                        <!-- <input type="text" v-model="user_dob" class="form-control" id="user_dob" name="user_dob" title="1985-02-01" pattern="\d{4}-\d{2}-\d{2}" required> -->
-                         <FlatpickrDateTime v-model="user_dob" class="form-control" id="user_dob" name="user_dob" required/>
+                        <input type="text" v-model="user_dob" class="form-control" id="user_dob" name="user_dob" title="1985-02-21" pattern="\d{4}-\d{2}-\d{2}" required>
                         <div class="invalid-feedback">
                             Please provide date of birth!
                         </div>
@@ -60,58 +59,55 @@
     </div>
 </template>
 
-
 <script>
-import FlatpickrDateTime from '@/components/FlatpickrDateTime.vue';
 export default {
-    components: {
-        FlatpickrDateTime
-    },
+    name: 'UserCreate',
     data() {
         return {
-            // Define your component's data properties here
-            user_id: '',
-            password: '',
+            login_id: '',
+            login_password: '',
             user_fname: '',
             user_lname: '',
             user_qualification: '',
-            user_dob: '',
-            role_id: 'user'
-        }
+            user_dob: ''
+        };
     },
     methods: {
-        async register() {
-            // Implement your login logic here
-            try{
-                const response = await fetch('http://127.0.0.1:5000/api/users/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        user_id: this.user_id,
-                        password: this.password,
-                        user_fname: this.user_fname,
-                        user_lname: this.user_lname,
-                        user_qualification: this.user_qualification,
-                        user_dob: this.user_dob,
-                        role_id: this.role_id
-                    })
-                });
-                const data = await response.json();
-                if(!response.ok){
-                    alert(data.error);
-                    return;
+        createUser() {
+            fetch('http://127.0.0.1:5000/api/user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    login_id: this.login_id,
+                    login_password: this.login_password,
+                    role_name: 'user',
+                    user_fname: this.user_fname,
+                    user_lname: this.user_lname,
+                    user_qualification: this.user_qualification,
+                    user_dob: this.user_dob
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('User creation failed');
                 }
-                else{
-                    alert(data.message);
-                    this.$router.push("/login");
-                }
-            } catch (error) {
-                console.error("Registration failed:", error);
-            }
+            })
+            .then(data => {
+                // Handle successful user creation here
+                console.log('User created successfully:', data);
+                // Redirect to the user page or perform any other action
+                this.$router.push('/');
+            })
+            .catch(error => {
+                // Handle user creation error here
+                console.error('Error:', error);
+                alert('User creation failed. Please check your input.');
+            });
         }
     }
-}
-
+};
 </script>
