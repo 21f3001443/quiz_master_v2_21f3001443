@@ -251,6 +251,7 @@ class LogoutRoute(ProtectedResource):
 
 class RegisterRoute(SecureResource):
     def post(self):
+        print( user_create_template.parse_args())
         return global_create(User, user_create_template.parse_args(), "user_id", self)
         
 quiz_question_template = reqparse.RequestParser()

@@ -16,9 +16,9 @@ import 'flatpickr/dist/flatpickr.css'
 const val = defineModel({ type: String, default: '' }) // ISO string by default
 
 const config = {
-  enableTime: true,
+  enableTime: false,
   time_24hr: true,
-  dateFormat: 'd/m/Y H:i',
+  dateFormat: 'Y-m-d',
   allowInput: true,
   // Add Today/Clear buttons
   onReady: (selectedDates, dateStr, instance) => {

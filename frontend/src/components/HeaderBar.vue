@@ -4,11 +4,31 @@
             
             <!-- Navigation Links -->
             <div class="navbar-nav">
-                <router-link to="/" class="nav-link text-light fw-bold">Home</router-link>
-                <router-link to="/quiz" class="nav-link text-light fw-bold">Quiz</router-link>
-                <router-link to="/userprofile" class="nav-link text-light fw-bold">User</router-link>
-                <router-link to="/summary" class="nav-link text-light fw-bold">Summary</router-link>
-                <router-link to="/logout" class="nav-link text-light fw-bold">Logout</router-link>
+                <ul v-if="loggedIn" class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <router-link to="/" class="nav-link text-light fw-bold">Home</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link to="/quiz" class="nav-link text-light fw-bold">Quiz</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link to="/userprofile" class="nav-link text-light fw-bold">User</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link to="/summary" class="nav-link text-light fw-bold">Summary</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <button @click="logout" class="btn btn-link text-light fw-bold text-decoration-none">Logout</button>
+                    </li>
+                </ul>
+                <ul v-if="!loggedIn" class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <router-link to="/login" class="nav-link text-light fw-bold">Login</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link to="/register" class="nav-link text-light fw-bold">Register</router-link>
+                    </li>
+                </ul>
             </div>
             <form class="d-flex mx-auto" action="#" method="GET">
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search" id="search">
@@ -16,7 +36,7 @@
 
             <!-- Welcome Message -->
             <span class="navbar-text text-light fw-bold">
-                Welcome Guest
+                Welcome {{ user }}
             </span>
         </div>
     </nav>
@@ -42,6 +62,10 @@ export default {
             try {
                 const access_token = localStorage.getItem("access_token");
                 if (!access_token) {
+                    this.user = "Guest";
+                    this.role = null;
+                    this.loggedIn = false;
+                    this.isExpired = true;
                     return;
                 }
 
@@ -61,11 +85,40 @@ export default {
                 this.user = decoded.sub;
                 this.role = decoded.role;
                 this.isExpired = Date.now() / 1000 >= decoded.exp;
+                if (!this.isExpired) {
+                    this.loggedIn = true;
+                }
 
             } catch (error) {
                 console.error("Failed to fetch user status:", error);
             }
+        },
+        async logout() {
+            try {
+                const access_token = localStorage.getItem("access_token");
+                const response = await fetch('http://127.0.0.1:5000/api/users/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${access_token}`
+                    }
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    return
+                }
+                localStorage.removeItem("access_token");
+                this.user = "Guest";
+                this.role = null;
+                this.loggedIn = false;
+                this.isExpired = true;
+            } catch (error) {
+                console.error("Failed to logout:", error);
+            }
         }
+    },
+    async created() {
+        await this.userStatus();
     }
 }
 </script>

@@ -100,10 +100,12 @@ export default {
                 });
                 const data = await response.json();
                 if(!response.ok){
+                    console.log(this.user_dob);
                     alert(data.error);
                     return;
                 }
                 else{
+                    console.log(this.user_dob);
                     alert(data.message);
                     this.$router.push("/login");
                 }
