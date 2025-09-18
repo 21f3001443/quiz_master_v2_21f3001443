@@ -63,7 +63,10 @@
 
 <script>
 import FlatpickrDateTime from '@/components/FlatpickrDateTime.vue';
+import UserStatus from "@/mixins/UserStatus.js";
 export default {
+    name: "Register",
+    mixins: [UserStatus],
     components: {
         FlatpickrDateTime
     },

@@ -34,7 +34,6 @@
 
 <script>
 import HeaderBar from '../components/HeaderBar.vue';
-import { jwtDecode } from "jwt-decode";
 
 export default {
     name: 'Login',
@@ -70,11 +69,6 @@ export default {
                 else{
                     localStorage.setItem("access_token", data.access_token);
                     localStorage.setItem("refresh_token", data.refresh_token);
-                    const decoded = jwtDecode(data.access_token);
-                    localStorage.setItem("user", decoded.sub);
-                    localStorage.setItem("role", decoded.role);
-                    localStorage.setItem("exp", decoded.exp);
-                    console.log(decoded);
                     this.$router.push("/");
                 }
             } catch (error) {
